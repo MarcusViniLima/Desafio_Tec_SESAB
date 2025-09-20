@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EnderecoViewDlg" widgetVar="EnderecoViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewEnderecoTitle}">
+            <h:form id="EnderecoViewForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{enderecoController.selected != null}">
+                        <h:outputText value="#{bundle.ViewEnderecoLabel_logradouro}"/>
+                        <h:outputText value="#{enderecoController.selected.logradouro}" title="#{bundle.ViewEnderecoTitle_logradouro}"/>
+                        <h:outputText value="#{bundle.ViewEnderecoLabel_cep}"/>
+                        <h:outputText value="#{enderecoController.selected.cep}" title="#{bundle.ViewEnderecoTitle_cep}"/>
+                        <h:outputText value="#{bundle.ViewEnderecoLabel_id}"/>
+                        <h:outputText value="#{enderecoController.selected.id}" title="#{bundle.ViewEnderecoTitle_id}"/>
+                    </p:panelGrid>
+                    <p:commandButton value="#{bundle.Close}" onclick="EnderecoViewDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

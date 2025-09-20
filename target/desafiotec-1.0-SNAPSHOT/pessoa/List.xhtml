@@ -16,6 +16,21 @@
         <ui:define name="body">
             <h:form id="PessoaListForm">
                 <p:panel header="#{bundle.ListPessoaTitle}">
+                    <p:panelGrid columns="3" style="margin-bottom: 20px;">
+                        <p:outputLabel for="nomeFiltro" value="Nome"/>
+                        <p:inputText id="nomeFiltro" value="#{pessoaController.nomeFiltro}"/>
+                        <p:commandButton value="Filtrar" actionListener="#{pessoaController.applyFilters}" update="datalist"/>
+
+                        <p:outputLabel for="cpfFiltro" value="CPF"/>
+                        <p:inputText id="cpfFiltro" value="#{pessoaController.cpfFiltro}"/>
+                        <h:outputText value=""/> <p:outputLabel for="dataInicioFiltro" value="Data incial"/>
+                        <p:calendar id="dataInicioFiltro" value="#{pessoaController.dataInicioFiltro}" pattern="dd/MM/yyyy"/>
+                        <h:outputText value=""/>
+
+                        <p:outputLabel for="dataFimFiltro" value="Data final"/>
+                        <p:calendar id="dataFimFiltro" value="#{pessoaController.dataFimFiltro}" pattern="dd/MM/yyyy"/>
+                        <h:outputText value=""/>
+                    </p:panelGrid>
                     <p:dataTable id="datalist" value="#{pessoaController.items}" var="item"
                                  selectionMode="single" selection="#{pessoaController.selected}"
                                  paginator="true"

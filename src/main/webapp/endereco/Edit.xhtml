@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition>
+
+        <p:dialog id="EnderecoEditDlg" widgetVar="EnderecoEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditEnderecoTitle}">
+            <h:form id="EnderecoEditForm">
+                <h:panelGroup id="display">
+                    <p:panelGrid columns="2" rendered="#{enderecoController.selected != null}">
+                        <p:outputLabel value="#{bundle.EditEnderecoLabel_logradouro}" for="logradouro" />
+                        <p:inputText id="logradouro" value="#{enderecoController.selected.logradouro}" title="#{bundle.EditEnderecoTitle_logradouro}" required="true" requiredMessage="#{bundle.EditEnderecoRequiredMessage_logradouro}"/>
+                        <p:outputLabel value="#{bundle.EditEnderecoLabel_cep}" for="cep" />
+                        <p:inputText id="cep" value="#{enderecoController.selected.cep}" title="#{bundle.EditEnderecoTitle_cep}" />
+                        <p:outputLabel value="#{bundle.EditEnderecoLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{enderecoController.selected.id}" title="#{bundle.EditEnderecoTitle_id}" />
+                    </p:panelGrid>
+                    <p:commandButton actionListener="#{enderecoController.update}" value="#{bundle.Save}" update="display,:EnderecoListForm:datalist,:growl" oncomplete="handleSubmit(args, 'EnderecoEditDialog');"/>
+                    <p:commandButton value="#{bundle.Cancel}" onclick="EnderecoEditDialog.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+    </ui:composition>
+</html>

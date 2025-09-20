@@ -19,11 +19,23 @@
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_email}" for="email" />
                         <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.CreatePessoaTitle_email}" />
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_dataCriacao}" for="dataCriacao" />
-                        <p:inputText id="dataCriacao" value="#{pessoaController.selected.dataCriacao}" title="#{bundle.CreatePessoaTitle_dataCriacao}" />
+                        <p:datePicker id="dataCriacao" 
+                                      value="#{pessoaController.selected.dataCriacao}" 
+                                      readonly="true"
+                                      disabled="true"
+                                      pattern="dd/MM/yyyy"
+                                      title="#{bundle.CreatePessoaTitle_dataCriacao}" />
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_perfil}" for="perfil" />
-                        <p:inputText id="perfil" value="#{pessoaController.selected.perfil}" title="#{bundle.CreatePessoaTitle_perfil}" />
+                        <p:selectOneMenu id="perfil" 
+                                         value="#{pessoaController.selected.perfil}" 
+                                         required="true"
+                                         title="#{bundle.CreatePessoaTitle_perfil}">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" />
+                            <f:selectItem itemLabel="Administrador" itemValue="ADM" />
+                            <f:selectItem itemLabel="Usuário" itemValue="USER" />
+                        </p:selectOneMenu>
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" />
+                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" disabled='true' />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{pessoaController.create}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,:growl" oncomplete="handleSubmit(args,'PessoaCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PessoaCreateDialog.hide()"/>
