@@ -1,0 +1,15 @@
+com\sesab\desafiotec\controllers\EnderecoJpaController.class
+com\sesab\desafiotec\controllers\util\JsfUtil$PersistAction.class
+com\sesab\desafiotec\controllers\PessoaController.class
+com\sesab\desafiotec\models\Pessoa.class
+com\sesab\desafiotec\controllers\PessoaController$PessoaControllerConverter.class
+com\sesab\desafiotec\controllers\exceptions\IllegalOrphanException.class
+com\sesab\desafiotec\controllers\PessoaJpaController.class
+com\sesab\desafiotec\models\EnumPerfil.class
+com\sesab\desafiotec\controllers\exceptions\PreexistingEntityException.class
+com\sesab\desafiotec\controllers\util\JsfUtil.class
+com\sesab\desafiotec\JakartaRestConfiguration.class
+com\sesab\desafiotec\controllers\exceptions\NonexistentEntityException.class
+com\sesab\desafiotec\models\Endereco.class
+com\sesab\desafiotec\controllers\exceptions\RollbackFailureException.class
+com\sesab\desafiotec\resources\JakartaEE10Resource.class

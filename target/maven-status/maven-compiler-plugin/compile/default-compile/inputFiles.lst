@@ -1,0 +1,13 @@
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\exceptions\IllegalOrphanException.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\models\EnumPerfil.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\PessoaController.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\exceptions\NonexistentEntityException.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\EnderecoJpaController.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\PessoaJpaController.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\JakartaRestConfiguration.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\exceptions\PreexistingEntityException.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\models\Pessoa.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\exceptions\RollbackFailureException.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\models\Endereco.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\util\JsfUtil.java
+D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\resources\JakartaEE10Resource.java
