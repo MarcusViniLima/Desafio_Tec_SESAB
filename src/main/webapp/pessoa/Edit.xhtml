@@ -19,11 +19,11 @@
                         <p:outputLabel value="#{bundle.EditPessoaLabel_email}" for="email" />
                         <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.EditPessoaTitle_email}" />
                         <p:outputLabel value="#{bundle.EditPessoaLabel_dataCriacao}" for="dataCriacao" />
-                        <p:inputText id="dataCriacao" value="#{pessoaController.selected.dataCriacao}" title="#{bundle.EditPessoaTitle_dataCriacao}" />
+                        <p:inputText id="dataCriacao" value="#{pessoaController.selected.dataCriacao}" title="#{bundle.EditPessoaTitle_dataCriacao}" disabled="true"/>
                         <p:outputLabel value="#{bundle.EditPessoaLabel_perfil}" for="perfil" />
-                        <p:inputText id="perfil" value="#{pessoaController.selected.perfil}" title="#{bundle.EditPessoaTitle_perfil}" />
+                        <p:inputText id="perfil" value="#{pessoaController.selected.perfil}" title="#{bundle.EditPessoaTitle_perfil}" disabled="true"/>
                         <p:outputLabel value="#{bundle.EditPessoaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.EditPessoaTitle_id}" />
+                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.EditPessoaTitle_id}" disabled="true" />
                     </p:panelGrid>
                     <p:commandButton actionListener="#{pessoaController.update}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PessoaEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PessoaEditDialog.hide()"/>

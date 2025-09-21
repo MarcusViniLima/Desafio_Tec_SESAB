@@ -8,86 +8,159 @@
 
     <ui:composition>
 
-        <p:dialog id="PessoaCreateDlg" widgetVar="PessoaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePessoaTitle}">
+        <p:dialog id="PessoaCreateDlg" widgetVar="PessoaCreateDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.CreatePessoaTitle}" width="800" height="650">
             <h:form id="PessoaCreateForm">
+
+                <h:outputStylesheet>
+                    .row-highlight {
+                    background-color: #e8f5e8 !important;
+                    border-left: 3px solid #28a745 !important;
+                    }
+                    .ui-datatable .ui-datatable-data tr.row-highlight:hover {
+                    background-color: #d4edda !important;
+                    }
+                    .status-badge {
+                    background-color: #28a745;
+                    color: white;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    font-weight: bold;
+                    }
+                    .address-section {
+                    border: 2px solid #e9ecef;
+                    border-radius: 6px;
+                    padding: 15px;
+                    margin-top: 20px;
+                    background-color: #f8f9fa;
+                    }
+                </h:outputStylesheet>
+
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{pessoaController.selected != null}">
-                        
-                        <p:growl id="growl" showDetail="true" life="3000" />
 
-                        <!-- DADOS PESSOAIS -->
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" disabled="true" />
+                    <p:panel header="Dados Pessoais" style="margin-bottom: 20px;">
+                        <p:panelGrid columns="2" style="width: 100%">
 
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_nome}" for="nome" />
-                        <p:inputText id="nome" value="#{pessoaController.selected.nome}" title="#{bundle.CreatePessoaTitle_nome}" required="true" requiredMessage="#{bundle.CreatePessoaRequiredMessage_nome}"/>
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_id}" for="id" />
+                            <p:inputText id="id" 
+                                         value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" disabled="true" />
 
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_cpf}" for="cpf" />
-                        <p:inputText id="cpf" value="#{pessoaController.selected.cpf}" title="#{bundle.CreatePessoaTitle_cpf}" />
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_nome}" for="nome" />
+                            <p:inputText id="nome" value="#{pessoaController.selected.nome}" title="#{bundle.CreatePessoaTitle_nome}" 
+                                         required="true" requiredMessage="#{bundle.CreatePessoaRequiredMessage_nome}"
+                                         maxlength="100"/>
 
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_email}" for="email" />
-                        <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.CreatePessoaTitle_email}" />
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_cpf}" for="cpf" />
+                            <p:inputText id="cpf" value="#{pessoaController.selected.cpf}" title="#{bundle.CreatePessoaTitle_cpf}" 
+                                         maxlength="14"/>
 
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_dataCriacao}" for="dataCriacao" />
-                        <p:datePicker id="dataCriacao" 
-                                      value="#{pessoaController.selected.dataCriacao}" 
-                                      readonly="true"
-                                      disabled="true"
-                                      pattern="dd/MM/yyyy"
-                                      title="#{bundle.CreatePessoaTitle_dataCriacao}" />
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_email}" for="email" />
+                            <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.CreatePessoaTitle_email}" 
+                                         maxlength="50"/>
 
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_perfil}" for="perfil" />
-                        <p:selectOneMenu id="perfil" 
-                                         value="#{pessoaController.selected.perfil}" 
-                                         required="true"
-                                         title="#{bundle.CreatePessoaTitle_perfil}">
-                            <f:selectItem itemLabel="Selecione..." itemValue="" />
-                            <f:selectItem itemLabel="Administrador" itemValue="ADM" />
-                            <f:selectItem itemLabel="Usuário" itemValue="USER" />
-                        </p:selectOneMenu>
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_dataCriacao}" for="dataCriacao" />
+                            <p:datePicker id="dataCriacao" 
+                                          value="#{pessoaController.selected.dataCriacao}" 
+                                          readonly="true"
+                                          disabled="true"
+                                          pattern="dd/MM/yyyy"
+                                          title="#{bundle.CreatePessoaTitle_dataCriacao}" />
 
-                    </p:panelGrid>
+                            <p:outputLabel value="#{bundle.CreatePessoaLabel_perfil}" for="perfil" />
+                            <p:selectOneMenu id="perfil" 
+                                             value="#{pessoaController.selected.perfil}" 
+                                             required="true"
+                                             title="#{bundle.CreatePessoaTitle_perfil}">
+                                <f:selectItem itemLabel="Selecione..." itemValue="" />
+                                <f:selectItem itemLabel="Administrador" itemValue="ADM" />
+                                <f:selectItem itemLabel="Usuário" itemValue="USER" />
+                            </p:selectOneMenu>
 
-                    <!-- SEÇÃO DE ENDEREÇOS -->
-                    <p:panel header="Endereços" style="margin-top:20px">
-                        <p:panelGrid columns="3">
-                            <p:outputLabel for="cepBusca" value="CEP"/>
-                            <p:inputText id="cepBusca" value="#{pessoaController.cepBusca}" />
-                            <p:commandButton value="Buscar por CEP" action="#{pessoaController.buscarEAdicionarEndereco}" 
-                                             update="enderecosTable :PessoaCreateForm:growl"/>
-
-                            <p:outputLabel for="logradouroBusca" value="Logradouro"/>
-                            <p:inputText id="logradouroBusca" value="#{pessoaController.logradouroBusca}" />
-                            <p:commandButton value="Buscar por Logradouro" action="#{pessoaController.buscarEAdicionarEndereco}" 
-                                             update="enderecosTable :PessoaCreateForm:growl"/>
-
-                            <p:outputLabel value=" "/>
-                            <p:commandButton value="Cadastrar Novo Endereço" 
-                                             action="/endereco/Create?faces-redirect=true&amp;source=pessoa"
-                                             icon="pi pi-plus"/>
                         </p:panelGrid>
-
-                        <p:dataTable id="enderecosTable" value="#{pessoaController.enderecosDaPessoa}" var="endereco" 
-                                     rendered="#{not empty pessoaController.enderecosDaPessoa}" style="margin-top:20px">
-                            <p:column headerText="Logradouro">
-                                <h:outputText value="#{endereco.logradouro}"/>
-                            </p:column>
-                            <p:column headerText="CEP">
-                                <h:outputText value="#{endereco.cep}"/>
-                            </p:column>
-                            <p:column headerText="Ação">
-                                <p:commandButton value="Excluir" actionListener="#{pessoaController.removerEndereco(endereco)}" 
-                                                 update="enderecosTable :PessoaCreateForm:growl" icon="pi pi-trash"/>
-                            </p:column>
-                        </p:dataTable>
                     </p:panel>
 
-                    <!-- BOTÕES DE AÇÃO -->
-                    <p:commandButton actionListener="#{pessoaController.create}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,growl" oncomplete="handleSubmit(args,'PessoaCreateDialog');"/>
-                    <p:commandButton value="#{bundle.Cancel}" onclick="PessoaCreateDialog.hide()"/>
+                    <p:panel header="Endereços" styleClass="address-section">
+                        <p:panelGrid columns="4" style="width: 100%; margin-bottom: 15px;">
+                            <p:outputLabel for="logradouro" value="Logradouro" style="font-weight: bold;"/>
+                            <p:outputLabel for="cep" value="Cep" style="font-weight: bold;"/>
+                            <p:outputLabel value=" "/>
+                            <p:outputLabel value=" "/>
+                            
+                            <p:inputText id="logradouro" value="#{pessoaController.novoEndereco.logradouro}" 
+                                         placeholder="Digite o logradouro" maxlength="100" style="width: 100%"/>
+                            
+                            <p:inputText id="cep" value="#{pessoaController.novoEndereco.cep}" 
+                                         placeholder="Digite o CEP" maxlength="9" style="width: 100%"/>
+                            
+                            <p:commandButton value="Adicionar" action="#{pessoaController.adicionarEndereco}" 
+                                             update="enderecosTable,growl,statusPanel,@form"
+                                             icon="pi pi-plus"
+                                             styleClass="ui-button-success"
+                                             style="width: 100%"/>
+                        </p:panelGrid>
+
+                        <p:outputPanel id="statusPanel" style="margin-top: 15px;">
+                            <p:outputLabel value="✅ Endereços adicionados: " style="font-weight: bold;"/>
+                            <span class="status-badge">#{pessoaController.enderecosDaPessoa.size()}</span>
+                        </p:outputPanel>
+
+                        <p:dataTable id="enderecosTable" value="#{pessoaController.enderecosDaPessoa}" var="endereco" 
+                                     rendered="#{not empty pessoaController.enderecosDaPessoa}" 
+                                     style="margin-top:20px; width: 100%"
+                                     rowStyleClass="row-highlight">
+
+                            <p:column headerText="Logradouro" style="width: 70%">
+                                <h:outputText value="#{endereco.logradouro}" style="font-weight: bold;"/>
+                            </p:column>
+
+                            <p:column headerText="Cep" style="width: 15%">
+                                <h:outputText value="#{endereco.cep}" style="font-family: monospace;"/>
+                            </p:column>
+
+                            <p:column headerText="Ação" style="width: 15%; text-align: center;">
+                                <p:commandButton icon="pi pi-trash" title="Excluir" 
+                                                 actionListener="#{pessoaController.removerEndereco(endereco)}" 
+                                                 update="enderecosTable,growl,statusPanel"
+                                                 styleClass="ui-button-danger"/>
+                            </p:column>
+                        </p:dataTable>
+
+                        <p:outputLabel value="Nenhum endereço adicionado ainda. Use os campos acima para adicionar endereços." 
+                                       rendered="#{empty pessoaController.enderecosDaPessoa}"
+                                       style="font-style: italic; color: #6c757d; padding: 15px; display: block; text-align: center;"/>
+                    </p:panel>
+
+                    <p:panelGrid columns="2" style="width: 100%; margin-top: 20px; border: none;">
+                        <p:commandButton actionListener="#{pessoaController.create}" value="#{bundle.Save}" 
+                                         update="display,:PessoaListForm:datalist,:PessoaListForm:growl" 
+                                         oncomplete="handleSubmit(args,'PessoaCreateDialog');"
+                                         icon="pi pi-save"
+                                         styleClass="ui-button-success"
+                                         rendered="#{pessoaController.selected.id == null}"/>
+
+                        <p:commandButton value="#{bundle.Cancel}" onclick="PessoaCreateDialog.hide()"
+                                         icon="pi pi-times"
+                                         styleClass="ui-button-secondary"/>
+                    </p:panelGrid>
 
                 </h:panelGroup>
             </h:form>
+
+            <h:outputScript>
+                function handleSubmit(args, dialogName) {
+                if (!args.validationFailed) {
+                // Feedback visual adicional após salvar
+                setTimeout(function() {
+                PF('growl').renderMessage({
+                'summary': 'Sucesso!',
+                'detail': 'Pessoa cadastrada com ' + #{pessoaController.enderecosDaPessoa.size()} + ' endereço(s)',
+                'severity': 'success'
+                });
+                }, 500);
+                }
+                }
+            </h:outputScript>
+
         </p:dialog>
 
     </ui:composition>
