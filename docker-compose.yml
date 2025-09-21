@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  glassfish:
+    build: .
+    ports:
+      - "8080:8080"
+      - "4848:4848"
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=desafiotec
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+    volumes:
+      - glassfish_data:/glassfish5/glassfish/domains/domain1
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=desafio
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+  glassfish_data:
