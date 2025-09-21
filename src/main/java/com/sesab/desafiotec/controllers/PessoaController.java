@@ -49,7 +49,7 @@ public class PessoaController implements Serializable {
     private List<Endereco> enderecosDaPessoa;
     private Endereco enderecoSelecionado;
     private List<Endereco> todosOsEnderecos;
-    private Endereco novoEndereco; // NOVO CAMPO ADICIONADO
+    private Endereco novoEndereco;
 
     public PessoaController() {
     }
@@ -61,7 +61,7 @@ public class PessoaController implements Serializable {
             selected.setDataCriacao(new Date());
         }
         enderecosDaPessoa = new ArrayList<>();
-        novoEndereco = new Endereco(); // INICIALIZAÇÃO DO NOVO CAMPO
+        novoEndereco = new Endereco();
     }
 
     public Pessoa getSelectedWithEnderecos() {
@@ -88,7 +88,6 @@ public class PessoaController implements Serializable {
         this.selected = selected;
     }
 
-    // NOVO GETTER E SETTER
     public Endereco getNovoEndereco() {
         if (novoEndereco == null) {
             novoEndereco = new Endereco();
@@ -201,18 +200,16 @@ public class PessoaController implements Serializable {
         selected = new Pessoa();
         selected.setDataCriacao(new Date());
         enderecosDaPessoa = new ArrayList<>();
-        novoEndereco = new Endereco(); // RESETA O NOVO ENDEREÇO
+        novoEndereco = new Endereco();
         initializeEmbeddableKey();
         return selected;
     }
 
-    // NOVO MÉTODO ADICIONADO
     public void adicionarEndereco() {
         if (novoEndereco != null
                 && !StringUtils.isEmpty(novoEndereco.getLogradouro())
                 && !StringUtils.isEmpty(novoEndereco.getCep())) {
 
-            // Verifica se o endereço já foi adicionado
             boolean enderecoExiste = false;
             for (Endereco end : enderecosDaPessoa) {
                 if (end.getCep().equals(novoEndereco.getCep())
@@ -223,11 +220,17 @@ public class PessoaController implements Serializable {
             }
 
             if (!enderecoExiste) {
-                getEnderecosDaPessoa().add(novoEndereco);
-                JsfUtil.addSuccessMessage("Endereço adicionado com sucesso!");
+                Endereco enderecoExistente = enderecoFacade.findByCepAndLogradouro(
+                        novoEndereco.getCep(), novoEndereco.getLogradouro());
 
-                // Limpa o formulário para novo preenchimento
-                novoEndereco = new Endereco();
+                if (enderecoExistente != null) {
+                    getEnderecosDaPessoa().add(enderecoExistente);
+                } else {
+                    getEnderecosDaPessoa().add(novoEndereco);
+                }
+
+                JsfUtil.addSuccessMessage("Endereço adicionado com sucesso!");
+                novoEndereco = new Endereco(); // Limpa para novo preenchimento
             } else {
                 JsfUtil.addWarningMessage("Este endereço já foi adicionado.");
             }
@@ -241,23 +244,29 @@ public class PessoaController implements Serializable {
             Logger.getLogger(PessoaController.class.getName()).log(Level.INFO,
                     "Iniciando criação da pessoa com {0} endereços", enderecosDaPessoa.size());
 
-            selected.setEnderecos(enderecosDaPessoa);
+            if (enderecosDaPessoa != null && !enderecosDaPessoa.isEmpty()) {
+                List<Endereco> enderecosParaAssociar = new ArrayList<>();
 
-            if (selected.getEnderecos() != null) {
-                Logger.getLogger(PessoaController.class.getName()).log(Level.INFO,
-                        "Pessoa tem {0} endereços associados", selected.getEnderecos().size());
+                for (Endereco endereco : enderecosDaPessoa) {
+                    if (endereco.getId() != null) {
+                        enderecosParaAssociar.add(endereco);
+                    } else {
+                        enderecoFacade.create(endereco);
+                        enderecosParaAssociar.add(endereco);
+                    }
+                }
+                selected.setEnderecos(enderecosParaAssociar);
             }
 
             persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("PessoaCreated"));
 
             if (!JsfUtil.isValidationFailed()) {
                 JsfUtil.addSuccessMessage("Pessoa criada com sucesso com " + enderecosDaPessoa.size() + " endereços!");
-
                 items = null;
                 enderecosDaPessoa = new ArrayList<>();
                 selected = new Pessoa();
                 selected.setDataCriacao(new Date());
-                novoEndereco = new Endereco(); // LIMPA O NOVO ENDEREÇO
+                novoEndereco = new Endereco();
             }
         } catch (Exception e) {
             Logger.getLogger(PessoaController.class.getName()).log(Level.SEVERE, "Erro ao criar pessoa", e);
@@ -270,10 +279,22 @@ public class PessoaController implements Serializable {
     }
 
     public void destroy() {
-        persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("PessoaDeleted"));
-        if (!JsfUtil.isValidationFailed()) {
-            selected = null;
-            items = null;
+        try {
+            // Remove a associação ManyToMany antes de deletar a pessoa
+            if (selected != null && selected.getEnderecos() != null) {
+                selected.getEnderecos().clear();
+                getFacade().edit(selected);
+            }
+
+            persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("PessoaDeleted"));
+
+            if (!JsfUtil.isValidationFailed()) {
+                selected = null;
+                items = null;
+            }
+        } catch (Exception e) {
+            Logger.getLogger(PessoaController.class.getName()).log(Level.SEVERE, "Erro ao deletar pessoa", e);
+            JsfUtil.addErrorMessage("Erro ao deletar: " + e.getMessage());
         }
     }
 
@@ -341,6 +362,15 @@ public class PessoaController implements Serializable {
             setEmbeddableKeys();
             try {
                 if (persistAction != PersistAction.DELETE) {
+                    // Para ManyToMany, precisamos gerenciar manualmente a persistência
+                    if (selected.getEnderecos() != null) {
+                        for (Endereco endereco : selected.getEnderecos()) {
+                            if (endereco.getId() == null) {
+                                // Persiste novos endereços
+                                enderecoFacade.create(endereco);
+                            }
+                        }
+                    }
                     getFacade().edit(selected);
                 } else {
                     getFacade().remove(selected);
@@ -368,6 +398,14 @@ public class PessoaController implements Serializable {
                 FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
             }
         }
+    }
+
+    public void onRowSelect(SelectEvent event) {
+        // Método vazio - apenas para trigger do evento
+    }
+
+    public void onRowUnselect(UnselectEvent event) {
+        // Método vazio - apenas para trigger do evento
     }
 
     @FacesConverter(forClass = Pessoa.class)
@@ -410,13 +448,5 @@ public class PessoaController implements Serializable {
                 return null;
             }
         }
-    }
-
-    public void onRowSelect(SelectEvent event) {
-        // Método vazio - apenas para trigger do evento
-    }
-
-    public void onRowUnselect(UnselectEvent event) {
-        // Método vazio - apenas para trigger do evento
     }
 }

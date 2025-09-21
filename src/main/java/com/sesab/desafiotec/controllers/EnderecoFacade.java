@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.sesab.desafiotec.controllers;
 
 import com.sesab.desafiotec.models.Endereco;
@@ -12,10 +8,6 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-/**
- *
- * @author joao
- */
 @Stateless
 public class EnderecoFacade extends AbstractFacade<Endereco> {
 
@@ -38,8 +30,7 @@ public class EnderecoFacade extends AbstractFacade<Endereco> {
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
-        } catch (NonUniqueResultException e) { // Adicione este novo bloco catch
-            // Logar o erro ou lidar com ele de forma apropriada
+        } catch (NonUniqueResultException e) {
             System.err.println("Múltiplos resultados encontrados para o CEP: " + cep);
             return null;
         }
@@ -52,10 +43,28 @@ public class EnderecoFacade extends AbstractFacade<Endereco> {
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
-        } catch (NonUniqueResultException e) { // Adicione este novo bloco catch
-            // Logar o erro ou lidar com ele de forma apropriada
+        } catch (NonUniqueResultException e) {
             System.err.println("Múltiplos resultados encontrados para o logradouro: " + logradouro);
             return null;
         }
+    }
+
+    public Endereco findByCepAndLogradouro(String cep, String logradouro) {
+        try {
+            TypedQuery<Endereco> query = em.createQuery(
+                    "SELECT e FROM Endereco e WHERE e.cep = :cep AND e.logradouro = :logradouro", Endereco.class);
+            query.setParameter("cep", cep);
+            query.setParameter("logradouro", logradouro);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            System.err.println("Múltiplos resultados encontrados para CEP: " + cep + " e logradouro: " + logradouro);
+            return null;
+        }
+    }
+
+    public void create(Endereco endereco) {
+        em.persist(endereco);
     }
 }
