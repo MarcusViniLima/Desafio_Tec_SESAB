@@ -8,24 +8,66 @@
 
     <ui:composition>
 
-        <p:dialog id="PessoaViewDlg" widgetVar="PessoaViewDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.ViewPessoaTitle}">
+        <p:dialog id="PessoaViewDlg" widgetVar="PessoaViewDialog" modal="true" resizable="false" appendTo="@(body)" 
+                  header="#{bundle.ViewPessoaTitle}" width="700" height="600">
             <h:form id="PessoaViewForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{pessoaController.selected != null}">
-                        <h:outputText value="#{bundle.ViewPessoaLabel_nome}"/>
+                    
+                    <p:panelGrid columns="2" rendered="#{pessoaController.selected != null}" 
+                                style="margin-bottom: 20px; width: 100%">
+                        <h:outputText value="#{bundle.ViewPessoaLabel_nome}" style="font-weight: bold;"/>
                         <h:outputText value="#{pessoaController.selected.nome}" title="#{bundle.ViewPessoaTitle_nome}"/>
-                        <h:outputText value="#{bundle.ViewPessoaLabel_cpf}"/>
+                        
+                        <h:outputText value="#{bundle.ViewPessoaLabel_cpf}" style="font-weight: bold;"/>
                         <h:outputText value="#{pessoaController.selected.cpf}" title="#{bundle.ViewPessoaTitle_cpf}"/>
-                        <h:outputText value="#{bundle.ViewPessoaLabel_email}"/>
+                        
+                        <h:outputText value="#{bundle.ViewPessoaLabel_email}" style="font-weight: bold;"/>
                         <h:outputText value="#{pessoaController.selected.email}" title="#{bundle.ViewPessoaTitle_email}"/>
-                        <h:outputText value="#{bundle.ViewPessoaLabel_dataCriacao}"/>
-                        <h:outputText value="#{pessoaController.selected.dataCriacao}" title="#{bundle.ViewPessoaTitle_dataCriacao}"/>
-                        <h:outputText value="#{bundle.ViewPessoaLabel_perfil}"/>
+                        
+                        <h:outputText value="#{bundle.ViewPessoaLabel_dataCriacao}" style="font-weight: bold;"/>
+                        <h:outputText value="#{pessoaController.selected.dataCriacao}" title="#{bundle.ViewPessoaTitle_dataCriacao}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </h:outputText>
+                        
+                        <h:outputText value="#{bundle.ViewPessoaLabel_perfil}" style="font-weight: bold;"/>
                         <h:outputText value="#{pessoaController.selected.perfil}" title="#{bundle.ViewPessoaTitle_perfil}"/>
-                        <h:outputText value="#{bundle.ViewPessoaLabel_id}"/>
+                        
+                        <h:outputText value="#{bundle.ViewPessoaLabel_id}" style="font-weight: bold;"/>
                         <h:outputText value="#{pessoaController.selected.id}" title="#{bundle.ViewPessoaTitle_id}"/>
                     </p:panelGrid>
-                    <p:commandButton value="#{bundle.Close}" onclick="PessoaViewDialog.hide()"/>
+
+                    <p:panel header="Endereços Cadastrados" rendered="#{not empty pessoaController.selected.enderecos}" 
+                             style="margin-bottom: 20px;">
+                        <p:dataTable value="#{pessoaController.selected.enderecos}" var="endereco" 
+                                     emptyMessage="Nenhum endereço cadastrado"
+                                     style="width: 100%"
+                                     rowIndexVar="rowIndex">
+                            
+                            <p:column headerText="Logradouro" style="width: 60%">
+                                <h:outputText value="#{endereco.logradouro}"/>
+                            </p:column>
+                            
+                            <p:column headerText="CEP" style="width: 20%">
+                                <h:outputText value="#{endereco.cep}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Número" style="width: 20%">
+                                <h:outputText value="#{endereco.numero}"/>
+                            </p:column>
+                            
+                        </p:dataTable>
+                    </p:panel>
+
+                    <p:panel rendered="#{empty pessoaController.selected.enderecos}" 
+                             style="margin-bottom: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 4px;">
+                        <h:outputText value="⚠️ Nenhum endereço cadastrado para esta pessoa." 
+                                     style="font-style: italic; color: #6c757d; font-size: 14px;"/>
+                    </p:panel>
+
+                    <p:commandButton value="#{bundle.Close}" onclick="PessoaViewDialog.hide()" 
+                                   style="float: right; margin-top: 10px;"
+                                   icon="pi pi-times"/>
+                    
                 </h:panelGroup>
             </h:form>
         </p:dialog>

@@ -34,6 +34,7 @@ public class PessoaController implements Serializable {
 
     private List<Pessoa> items = null;
     private Pessoa selected;
+    private Pessoa selectedWithEnderecos;
 
     private String nomeFiltro;
     private String cpfFiltro;
@@ -58,6 +59,14 @@ public class PessoaController implements Serializable {
         enderecosDaPessoa = new ArrayList<>();
     }
 
+    public Pessoa getSelectedWithEnderecos() {
+        if (selectedWithEnderecos == null && selected != null && selected.getId() != null) {
+            // Carrega a pessoa com endereços
+            selectedWithEnderecos = getFacade().find(selected.getId());
+        }
+        return selectedWithEnderecos;
+    }
+
     public Pessoa getSelected() {
         if (selected == null) {
             selected = new Pessoa();
@@ -65,6 +74,7 @@ public class PessoaController implements Serializable {
         if (selected.getDataCriacao() == null) {
             selected.setDataCriacao(new Date());
         }
+
         return selected;
     }
 
@@ -286,10 +296,8 @@ public class PessoaController implements Serializable {
                 Throwable cause = ex.getCause();
                 if (cause != null) {
                     msg = cause.getLocalizedMessage();
-                    // Log mais detalhado
                     Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Erro EJB: " + msg, ex);
 
-                    // Verifica se é violação de constraint
                     if (msg.contains("ConstraintViolation") || msg.contains("unique") || msg.contains("Duplicate")) {
                         JsfUtil.addErrorMessage("Dados duplicados ou inválidos. Verifique CPF, email ou outros campos únicos.");
                     } else {
@@ -298,7 +306,6 @@ public class PessoaController implements Serializable {
                 } else {
                     JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
                 }
-                // Força o rollback explicitamente se necessário
                 FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Erro geral: ", ex);

@@ -10,9 +10,12 @@ import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -34,12 +37,15 @@ public class PessoaFacade extends AbstractFacade<Pessoa> {
     public PessoaFacade() {
         super(Pessoa.class);
     }
-    
+
     public List<Pessoa> findWithFilters(String nome, String cpf, Date dataInicio, Date dataFim) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Pessoa> cq = cb.createQuery(Pessoa.class);
         Root<Pessoa> pessoa = cq.from(Pessoa.class);
-        
+
+        pessoa.fetch("enderecos", JoinType.LEFT);
+        cq.distinct(true);
+
         List<Predicate> predicates = new ArrayList<>();
 
         if (nome != null && !nome.trim().isEmpty()) {
@@ -64,5 +70,16 @@ public class PessoaFacade extends AbstractFacade<Pessoa> {
 
         return em.createQuery(cq).getResultList();
     }
-    
+
+    public Pessoa findWithEnderecos(Long id) {
+        try {
+            TypedQuery<Pessoa> query = em.createQuery(
+                    "SELECT DISTINCT p FROM Pessoa p LEFT JOIN FETCH p.enderecos WHERE p.id = :id", Pessoa.class);
+            query.setParameter("id", id);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
 }
