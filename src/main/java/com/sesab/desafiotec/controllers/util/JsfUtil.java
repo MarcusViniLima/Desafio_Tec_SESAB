@@ -1,6 +1,5 @@
 package com.sesab.desafiotec.controllers.util;
 
-
 import java.util.List;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
@@ -60,6 +59,11 @@ public class JsfUtil {
     public static Object getObjectFromRequestParameter(String requestParameterName, Converter converter, UIComponent component) {
         String theId = JsfUtil.getRequestParameter(requestParameterName);
         return converter.getAsObject(FacesContext.getCurrentInstance(), component, theId);
+    }
+
+    public static void addWarningMessage(String msg) {
+        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_WARN, msg, msg);
+        FacesContext.getCurrentInstance().addMessage(null, facesMsg);
     }
 
     public static enum PersistAction {

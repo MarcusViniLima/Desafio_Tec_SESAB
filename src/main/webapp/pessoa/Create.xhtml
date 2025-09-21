@@ -12,12 +12,22 @@
             <h:form id="PessoaCreateForm">
                 <h:panelGroup id="display">
                     <p:panelGrid columns="2" rendered="#{pessoaController.selected != null}">
+                        
+                        <p:growl id="growl" showDetail="true" life="3000" />
+
+                        <!-- DADOS PESSOAIS -->
+                        <p:outputLabel value="#{bundle.CreatePessoaLabel_id}" for="id" />
+                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" disabled="true" />
+
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_nome}" for="nome" />
                         <p:inputText id="nome" value="#{pessoaController.selected.nome}" title="#{bundle.CreatePessoaTitle_nome}" required="true" requiredMessage="#{bundle.CreatePessoaRequiredMessage_nome}"/>
+
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_cpf}" for="cpf" />
                         <p:inputText id="cpf" value="#{pessoaController.selected.cpf}" title="#{bundle.CreatePessoaTitle_cpf}" />
+
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_email}" for="email" />
                         <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.CreatePessoaTitle_email}" />
+
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_dataCriacao}" for="dataCriacao" />
                         <p:datePicker id="dataCriacao" 
                                       value="#{pessoaController.selected.dataCriacao}" 
@@ -25,6 +35,7 @@
                                       disabled="true"
                                       pattern="dd/MM/yyyy"
                                       title="#{bundle.CreatePessoaTitle_dataCriacao}" />
+
                         <p:outputLabel value="#{bundle.CreatePessoaLabel_perfil}" for="perfil" />
                         <p:selectOneMenu id="perfil" 
                                          value="#{pessoaController.selected.perfil}" 
@@ -34,11 +45,47 @@
                             <f:selectItem itemLabel="Administrador" itemValue="ADM" />
                             <f:selectItem itemLabel="Usuário" itemValue="USER" />
                         </p:selectOneMenu>
-                        <p:outputLabel value="#{bundle.CreatePessoaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.CreatePessoaTitle_id}" disabled='true' />
+
                     </p:panelGrid>
-                    <p:commandButton actionListener="#{pessoaController.create}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,:growl" oncomplete="handleSubmit(args,'PessoaCreateDialog');"/>
+
+                    <!-- SEÇÃO DE ENDEREÇOS -->
+                    <p:panel header="Endereços" style="margin-top:20px">
+                        <p:panelGrid columns="3">
+                            <p:outputLabel for="cepBusca" value="CEP"/>
+                            <p:inputText id="cepBusca" value="#{pessoaController.cepBusca}" />
+                            <p:commandButton value="Buscar por CEP" action="#{pessoaController.buscarEAdicionarEndereco}" 
+                                             update="enderecosTable :PessoaCreateForm:growl"/>
+
+                            <p:outputLabel for="logradouroBusca" value="Logradouro"/>
+                            <p:inputText id="logradouroBusca" value="#{pessoaController.logradouroBusca}" />
+                            <p:commandButton value="Buscar por Logradouro" action="#{pessoaController.buscarEAdicionarEndereco}" 
+                                             update="enderecosTable :PessoaCreateForm:growl"/>
+
+                            <p:outputLabel value=" "/>
+                            <p:commandButton value="Cadastrar Novo Endereço" 
+                                             action="/endereco/Create?faces-redirect=true&amp;source=pessoa"
+                                             icon="pi pi-plus"/>
+                        </p:panelGrid>
+
+                        <p:dataTable id="enderecosTable" value="#{pessoaController.enderecosDaPessoa}" var="endereco" 
+                                     rendered="#{not empty pessoaController.enderecosDaPessoa}" style="margin-top:20px">
+                            <p:column headerText="Logradouro">
+                                <h:outputText value="#{endereco.logradouro}"/>
+                            </p:column>
+                            <p:column headerText="CEP">
+                                <h:outputText value="#{endereco.cep}"/>
+                            </p:column>
+                            <p:column headerText="Ação">
+                                <p:commandButton value="Excluir" actionListener="#{pessoaController.removerEndereco(endereco)}" 
+                                                 update="enderecosTable :PessoaCreateForm:growl" icon="pi pi-trash"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+
+                    <!-- BOTÕES DE AÇÃO -->
+                    <p:commandButton actionListener="#{pessoaController.create}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,growl" oncomplete="handleSubmit(args,'PessoaCreateDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PessoaCreateDialog.hide()"/>
+
                 </h:panelGroup>
             </h:form>
         </p:dialog>

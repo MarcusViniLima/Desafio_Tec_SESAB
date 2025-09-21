@@ -6,6 +6,7 @@ import com.sesab.desafiotec.controllers.util.JsfUtil.PersistAction;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -159,6 +160,36 @@ public class EnderecoController implements Serializable {
             }
         }
 
+    }
+
+    public String createAndReturn() {
+        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("EnderecoCreated"));
+
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String source = params.get("source");
+
+        if ("pessoa".equals(source)) {
+            return "/pessoa/Create?faces-redirect=true";
+        }
+        return null;
+    }
+
+    public void prepareCreateFromPessoa() {
+        selected = new Endereco();
+
+        // Obter parâmetros da URL se vierem do cadastro de pessoa
+        Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+        String cep = params.get("cep");
+        String logradouro = params.get("logradouro");
+
+        if (cep != null) {
+            selected.setCep(cep);
+        }
+        if (logradouro != null) {
+            selected.setLogradouro(logradouro);
+        }
+
+        initializeEmbeddableKey();
     }
 
 }

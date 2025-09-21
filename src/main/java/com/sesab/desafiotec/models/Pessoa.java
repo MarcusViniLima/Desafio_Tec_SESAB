@@ -37,7 +37,7 @@ public class Pessoa implements Serializable {
     private String nome;
     @Column(name = "cpf", unique = true, length = 11)
     private String cpf;
-    @Column(name = "email", unique = true, length = 20)
+    @Column(name = "email", unique = true, length = 50)
     private String email;
     private Date dataCriacao;
     @Enumerated(EnumType.STRING)
@@ -45,8 +45,8 @@ public class Pessoa implements Serializable {
     
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-        name = "usuario_endereco",
-        joinColumns = @JoinColumn(name = "usuario_id"),
+        name = "pessoa_endereco",
+        joinColumns = @JoinColumn(name = "pessoa_id"),
         inverseJoinColumns = @JoinColumn(name = "endereco_id")
     )
     private List<Endereco> enderecos = new ArrayList<>();

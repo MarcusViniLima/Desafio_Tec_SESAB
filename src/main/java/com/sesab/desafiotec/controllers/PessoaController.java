@@ -3,8 +3,10 @@ package com.sesab.desafiotec.controllers;
 import com.sesab.desafiotec.models.Pessoa;
 import com.sesab.desafiotec.controllers.util.JsfUtil;
 import com.sesab.desafiotec.controllers.util.JsfUtil.PersistAction;
+import com.sesab.desafiotec.models.Endereco;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,14 +27,50 @@ import javax.faces.convert.FacesConverter;
 public class PessoaController implements Serializable {
 
     @EJB
-    private com.sesab.desafiotec.controllers.PessoaFacade ejbFacade;
+    private PessoaFacade ejbFacade;
+
+    @EJB
+    private EnderecoFacade enderecoFacade;
+
     private List<Pessoa> items = null;
     private Pessoa selected;
-    
+
     private String nomeFiltro;
     private String cpfFiltro;
     private Date dataInicioFiltro;
     private Date dataFimFiltro;
+
+    private String cepBusca;
+    private String logradouroBusca;
+    private List<Endereco> enderecosDaPessoa;
+    private Endereco enderecoSelecionado;
+    private List<Endereco> todosOsEnderecos;
+
+    public PessoaController() {
+    }
+
+    @PostConstruct
+    public void init() {
+        selected = new Pessoa();
+        if (selected.getDataCriacao() == null) {
+            selected.setDataCriacao(new Date());
+        }
+        enderecosDaPessoa = new ArrayList<>();
+    }
+
+    public Pessoa getSelected() {
+        if (selected == null) {
+            selected = new Pessoa();
+        }
+        if (selected.getDataCriacao() == null) {
+            selected.setDataCriacao(new Date());
+        }
+        return selected;
+    }
+
+    public void setSelected(Pessoa selected) {
+        this.selected = selected;
+    }
 
     public String getNomeFiltro() {
         return nomeFiltro;
@@ -66,54 +104,107 @@ public class PessoaController implements Serializable {
         this.dataFimFiltro = dataFimFiltro;
     }
 
-    public PessoaController() {
+    public String getCepBusca() {
+        return cepBusca;
     }
 
-    @PostConstruct
-    public void init() {
-        selected = new Pessoa();
-        // Garante data atual
-        if (selected.getDataCriacao() == null) {
-            selected.setDataCriacao(new Date());
+    public void setCepBusca(String cepBusca) {
+        this.cepBusca = cepBusca;
+    }
+
+    public String getLogradouroBusca() {
+        return logradouroBusca;
+    }
+
+    public void setLogradouroBusca(String logradouroBusca) {
+        this.logradouroBusca = logradouroBusca;
+    }
+
+    public List<Endereco> getEnderecosDaPessoa() {
+        if (enderecosDaPessoa == null) {
+            enderecosDaPessoa = new ArrayList<>();
         }
+        return enderecosDaPessoa;
     }
 
-    public Pessoa getSelected() {
-        if (selected == null) {
-            selected = new Pessoa();
+    public void setEnderecosDaPessoa(List<Endereco> enderecosDaPessoa) {
+        this.enderecosDaPessoa = enderecosDaPessoa;
+    }
+
+    public Endereco getEnderecoSelecionado() {
+        return enderecoSelecionado;
+    }
+
+    public void setEnderecoSelecionado(Endereco enderecoSelecionado) {
+        this.enderecoSelecionado = enderecoSelecionado;
+    }
+
+    public List<Endereco> getTodosOsEnderecos() {
+        if (todosOsEnderecos == null) {
+            todosOsEnderecos = enderecoFacade.findAll();
         }
-        // Garante que sempre tenha data atual se for nula
-        if (selected.getDataCriacao() == null) {
-            selected.setDataCriacao(new Date());
-        }
-        return selected;
-    }
-
-    public void setSelected(Pessoa selected) {
-        this.selected = selected;
-    }
-
-    protected void setEmbeddableKeys() {
-    }
-
-    protected void initializeEmbeddableKey() {
+        return todosOsEnderecos;
     }
 
     private PessoaFacade getFacade() {
         return ejbFacade;
     }
 
+    public List<Pessoa> getItems() {
+        if (items == null) {
+            items = getFacade().findWithFilters(nomeFiltro, cpfFiltro, dataInicioFiltro, dataFimFiltro);
+        }
+        return items;
+    }
+
+    public Pessoa getPessoa(java.lang.Long id) {
+        return getFacade().find(id);
+    }
+
+    public List<Pessoa> getItemsAvailableSelectMany() {
+        return getFacade().findAll();
+    }
+
+    public List<Pessoa> getItemsAvailableSelectOne() {
+        return getFacade().findAll();
+    }
+
     public Pessoa prepareCreate() {
         selected = new Pessoa();
         selected.setDataCriacao(new Date());
+        enderecosDaPessoa = new ArrayList<>();
         initializeEmbeddableKey();
         return selected;
     }
 
     public void create() {
-        persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("PessoaCreated"));
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+        try {
+            if (enderecosDaPessoa != null && !enderecosDaPessoa.isEmpty()) {
+                List<Endereco> enderecosManaged = new ArrayList<>();
+                for (Endereco endereco : enderecosDaPessoa) {
+                    if (endereco.getId() != null) {
+                        Endereco managedEndereco = enderecoFacade.find(endereco.getId());
+                        if (managedEndereco != null) {
+                            enderecosManaged.add(managedEndereco);
+                        }
+                    } else {
+                        enderecoFacade.create(endereco);
+                        enderecosManaged.add(endereco);
+                    }
+                }
+                selected.setEnderecos(enderecosManaged);
+            }
+            persist(PersistAction.CREATE, ResourceBundle.getBundle("/Bundle").getString("PessoaCreated"));
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                enderecosDaPessoa = new ArrayList<>();
+                selected = new Pessoa();
+                selected.setDataCriacao(new Date());
+            }
+        } catch (Exception e) {
+            Logger.getLogger(PessoaController.class.getName()).log(Level.SEVERE, "Erro ao criar pessoa", e);
+            JsfUtil.addErrorMessage("Erro ao salvar pessoa: " + e.getMessage());
         }
     }
 
@@ -124,20 +215,60 @@ public class PessoaController implements Serializable {
     public void destroy() {
         persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("PessoaDeleted"));
         if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
+            items = null;
         }
     }
 
-    public List<Pessoa> getItems() {
-        if (items == null) {
-            items = getFacade().findWithFilters(nomeFiltro, cpfFiltro, dataInicioFiltro, dataFimFiltro);
-        }
-        return items;
-    }
-    
     public void applyFilters() {
         items = null;
+    }
+
+    public void buscarEAdicionarEndereco() {
+        Endereco enderecoEncontrado = null;
+
+        if (cepBusca != null && !cepBusca.trim().isEmpty()) {
+            enderecoEncontrado = enderecoFacade.findByCep(cepBusca);
+        } else if (logradouroBusca != null && !logradouroBusca.trim().isEmpty()) {
+            enderecoEncontrado = enderecoFacade.findByLogradouro(logradouroBusca);
+        }
+
+        if (enderecoEncontrado != null) {
+            if (!getEnderecosDaPessoa().contains(enderecoEncontrado)) {
+                getEnderecosDaPessoa().add(enderecoEncontrado);
+                JsfUtil.addSuccessMessage("Endereço adicionado com sucesso!");
+            } else {
+                JsfUtil.addWarningMessage("Este endereço já foi adicionado.");
+            }
+        } else {
+            JsfUtil.addWarningMessage("Endereço não encontrado. Por favor, adicione-o primeiro.");
+        }
+
+        cepBusca = null;
+        logradouroBusca = null;
+    }
+
+    public void adicionarEnderecoSelecionado() {
+        if (enderecoSelecionado != null) {
+            if (!getEnderecosDaPessoa().contains(enderecoSelecionado)) {
+                getEnderecosDaPessoa().add(enderecoSelecionado);
+                JsfUtil.addSuccessMessage("Endereço adicionado com sucesso!");
+            } else {
+                JsfUtil.addWarningMessage("Este endereço já foi adicionado.");
+            }
+            enderecoSelecionado = null;
+        }
+    }
+
+    public void removerEndereco(Endereco endereco) {
+        getEnderecosDaPessoa().remove(endereco);
+        JsfUtil.addSuccessMessage("Endereço removido com sucesso!");
+    }
+
+    protected void setEmbeddableKeys() {
+    }
+
+    protected void initializeEmbeddableKey() {
     }
 
     private void persist(PersistAction persistAction, String successMessage) {
@@ -155,30 +286,26 @@ public class PessoaController implements Serializable {
                 Throwable cause = ex.getCause();
                 if (cause != null) {
                     msg = cause.getLocalizedMessage();
-                }
-                if (msg.length() > 0) {
-                    JsfUtil.addErrorMessage(msg);
+                    // Log mais detalhado
+                    Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Erro EJB: " + msg, ex);
+
+                    // Verifica se é violação de constraint
+                    if (msg.contains("ConstraintViolation") || msg.contains("unique") || msg.contains("Duplicate")) {
+                        JsfUtil.addErrorMessage("Dados duplicados ou inválidos. Verifique CPF, email ou outros campos únicos.");
+                    } else {
+                        JsfUtil.addErrorMessage("Erro ao salvar: " + msg);
+                    }
                 } else {
                     JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
                 }
+                // Força o rollback explicitamente se necessário
+                FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Erro geral: ", ex);
                 JsfUtil.addErrorMessage(ex, ResourceBundle.getBundle("/Bundle").getString("PersistenceErrorOccured"));
+                FacesContext.getCurrentInstance().getExternalContext().getFlash().setKeepMessages(true);
             }
         }
-    }
-
-    public Pessoa getPessoa(java.lang.Long id) {
-        return getFacade().find(id);
-    }
-
-
-    public List<Pessoa> getItemsAvailableSelectMany() {
-        return getFacade().findAll();
-    }
-
-    public List<Pessoa> getItemsAvailableSelectOne() {
-        return getFacade().findAll();
     }
 
     @FacesConverter(forClass = Pessoa.class)
@@ -189,8 +316,8 @@ public class PessoaController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PessoaController controller = (PessoaController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "pessoaController");
+            PessoaController controller = (PessoaController) facesContext.getApplication().getELResolver()
+                    .getValue(facesContext.getELContext(), null, "pessoaController");
             return controller.getPessoa(getKey(value));
         }
 
@@ -215,11 +342,11 @@ public class PessoaController implements Serializable {
                 Pessoa o = (Pessoa) object;
                 return getStringKey(o.getId());
             } else {
-                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "object {0} is of type {1}; expected type: {2}", new Object[]{object, object.getClass().getName(), Pessoa.class.getName()});
+                Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,
+                        "object {0} is of type {1}; expected type: {2}",
+                        new Object[]{object, object.getClass().getName(), Pessoa.class.getName()});
                 return null;
             }
         }
-
     }
-
 }
