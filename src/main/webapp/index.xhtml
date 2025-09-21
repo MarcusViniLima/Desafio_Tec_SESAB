@@ -1,20 +1,97 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
-    <h:head>
-        <title>Facelet Title</title>
-        <h:outputStylesheet name="css/jsfcrud.css"/>
-    </h:head>
-    <h:body>
-        Hello from Facelets
-        <br />
-        <h:link outcome="/pessoa/List" value="Show All Pessoa Items"/>
-        <br />
-        <h:link outcome="/endereco/List" value="Show All Endereco Items"/>
-        <br />
-    </h:body>
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
 
+    <ui:composition template="/template.xhtml">
 
+        <ui:define name="title">
+            <h:outputText value="Home"></h:outputText>
+        </ui:define>
 
+        <ui:define name="body">
+            
+            <style type="text/css">
+                .card-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: calc(100vh - 120px); /* Ajusta a altura para centralizar na tela */
+                    background-color: #f0f2f5;
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+                }
+                .main-card {
+                    width: 350px;
+                    background-color: #ffffff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    padding: 24px;
+                }
+                .card-header {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    color: #333333;
+                    border-bottom: 1px solid #e0e0e0;
+                    padding-bottom: 16px;
+                    margin-bottom: 16px;
+                }
+                .card-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 16px 0;
+                    border-bottom: 1px solid #f0f0f0;
+                }
+                .card-item:last-child {
+                    border-bottom: none;
+                }
+                .card-item i {
+                    font-size: 1.25rem;
+                    margin-right: 16px;
+                    color: #555555;
+                }
+                .card-item .item-label {
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                    color: #888888;
+                    text-transform: uppercase;
+                    margin-bottom: 4px;
+                }
+                .card-item .item-value {
+                    font-size: 1rem;
+                    font-weight: 400;
+                    color: #333333;
+                }
+                .card-item a {
+                    text-decoration: none;
+                }
+            </style>
+
+            <h:panelGroup layout="block" styleClass="card-container">
+                <div class="main-card">
+                    <div class="card-header">Desafio Técnico SESAB</div>
+                    
+                    <h:link outcome="/pessoa/List" value="👤" styleClass="card-item">
+                        <i class="pi pi-user"></i>
+                        <div>
+                            <div class="item-label">USUARIO</div>
+                            <div class="item-value">Lista de usuarios</div>
+                        </div>
+                    </h:link>
+
+                    <h:link outcome="/endereco/List" value="📍" styleClass="card-item">
+                        <i class="pi pi-map-marker"></i>
+                        <div>
+                            <div class="item-label">ENDEREÇO</div>
+                            <div class="item-value">Lista de endereços</div>
+                        </div>
+                    </h:link>
+
+                </div>
+            </h:panelGroup>
+
+        </ui:define>
+
+    </ui:composition>
 </html>
