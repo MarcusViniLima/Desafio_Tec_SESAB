@@ -39,8 +39,12 @@ COPY --from=builder /root/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-
 # Cria um script para configurar a fonte de dados do Derby
 RUN echo '#!/bin/sh' > /tmp/setup_derby.sh && \
     echo 'echo "Configuring Derby JDBC resource..."' >> /tmp/setup_derby.sh && \
-    echo "${GLASSFISH_HOME}/bin/asadmin create-jdbc-connection-pool --datasourceclassname org.apache.derby.jdbc.ClientDataSource --property \"connectionAttributes=;create=true:databaseName=./derby_data/myDB\" derby_pool" >> /tmp/setup_derby.sh && \
-    echo "${GLASSFISH_HOME}/bin/asadmin create-jdbc-resource --connectionpoolid derby_pool jdbc/meuDerbyDataSource" >> /tmp/setup_derby.sh && \
+    echo "${GLASSFISH_HOME}/bin/asadmin create-jdbc-connection-pool \
+        --datasourceclassname org.apache.derby.jdbc.ClientDataSource \
+        --restype javax.sql.DataSource \
+        --property databaseName=/opt/payara/derby_data/desafiodb:createDatabase=true DerbyPool" >> /tmp/setup_derby.sh && \
+    echo "${GLASSFISH_HOME}/bin/asadmin create-jdbc-resource \
+        --connectionpoolid DerbyPool jdbc/meuDerbyDataSource" >> /tmp/setup_derby.sh && \
     echo 'echo "Derby JDBC resource configured."' >> /tmp/setup_derby.sh && \
     chmod +x /tmp/setup_derby.sh
 
