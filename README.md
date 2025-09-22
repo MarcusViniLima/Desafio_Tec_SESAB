@@ -116,16 +116,12 @@ docker-compose down -v
 docker exec -it desafiotec-glassfish-1 /bin/bash
 
 # Configurar connection pool
-asadmin create-jdbc-connection-pool \
-  --datasourceclassname org.postgresql.xa.PGXADataSource \
-  --restype javax.sql.XADataSource \
-  --property user=postgres:password=password:databaseName=desafiotec:serverName=postgres:portNumber=5432 \
-  desafiotecPool
+asadmin create-jdbc-connection-pool --datasourceclassname org.apache.derby.jdbc.ClientDataSource --property
 
 # Criar resource JNDI
 asadmin create-jdbc-resource \
   --connectionpoolid desafiotecPool \
-  jdbc/desafiotecDataSource
+  jdbc/meuDerbyDataSource
 
 # Testar conexão
 asadmin ping-connection-pool desafiotecPool
