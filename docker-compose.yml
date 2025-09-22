@@ -1,28 +1,39 @@
+version: '3.8'
+
 services:
-  glassfish:
+  # Serviço da sua aplicação TomEE
+  tomee:
     build: .
+    container_name: desafiotec_app
     ports:
       - "8080:8080"
-      - "4848:4848"
+    volumes:
+      # Monta o arquivo server.xml do host para o contêiner
+      - ./tomee-conf/server.xml:/usr/local/tomee/conf/server.xml
+      # Monta o arquivo tomee.xml do host para o contêiner
+      - ./tomee-conf/tomee.xml:/usr/local/tomee/conf/tomee.xml
     depends_on:
-      - postgres
+      - db
     environment:
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=desafiotec
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      # As variáveis de ambiente garantem que a fonte de dados e o JACC sejam configurados
+      - desafiotecDataSource_JdbcDriver=org.postgresql.Driver
+      - desafiotecDataSource_JdbcUrl=jdbc:postgresql://db:5432/desafio
+      - desafiotecDataSource_UserName=postgres
+      - desafiotecDataSource_Password=1234
+      - tomee_jacc_provider_active=false
 
-  postgres:
+  # Serviço do banco de dados PostgreSQL
+  db:
     image: postgres:13
-    environment:
-      - POSTGRES_DB=desafiotec
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+    container_name: desafiotec_db
     ports:
       - "5432:5432"
+    environment:
+      - POSTGRES_DB=desafio
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  postgres-data:
