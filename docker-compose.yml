@@ -1,39 +1,14 @@
 version: '3.8'
 
 services:
-  # Serviço da sua aplicação TomEE
-  tomee:
+  desafiotec-app:
     build: .
-    container_name: desafiotec_app
     ports:
       - "8080:8080"
     volumes:
-      # Monta o arquivo server.xml do host para o contêiner
-      - ./tomee-conf/server.xml:/usr/local/tomee/conf/server.xml
-      # Monta o arquivo tomee.xml do host para o contêiner
-      - ./tomee-conf/tomee.xml:/usr/local/tomee/conf/tomee.xml
-    depends_on:
-      - db
+      - app_data:/opt/payara/derby_data
     environment:
-      # As variáveis de ambiente garantem que a fonte de dados e o JACC sejam configurados
-      - desafiotecDataSource_JdbcDriver=org.postgresql.Driver
-      - desafiotecDataSource_JdbcUrl=jdbc:postgresql://db:5432/desafio
-      - desafiotecDataSource_UserName=postgres
-      - desafiotecDataSource_Password=1234
-      - tomee_jacc_provider_active=false
-
-  # Serviço do banco de dados PostgreSQL
-  db:
-    image: postgres:13
-    container_name: desafiotec_db
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=desafio
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=1234
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - JAVA_OPTS=-Dderby.system.home=/opt/payara/derby_data
 
 volumes:
-  postgres-data:
+  app_data:
