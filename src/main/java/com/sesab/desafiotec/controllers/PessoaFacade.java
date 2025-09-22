@@ -4,6 +4,7 @@
  */
 package com.sesab.desafiotec.controllers;
 
+import com.sesab.desafiotec.models.Endereco;
 import com.sesab.desafiotec.models.Pessoa;
 import java.util.ArrayList;
 import java.util.Date;
@@ -81,5 +82,15 @@ public class PessoaFacade extends AbstractFacade<Pessoa> {
             return null;
         }
     }
+
+    // PessoaFacade.java
+// ...
+    public List<Pessoa> findByEndereco(Endereco endereco) {
+        TypedQuery<Pessoa> query = em.createQuery(
+                "SELECT DISTINCT p FROM Pessoa p JOIN p.enderecos e WHERE e = :endereco", Pessoa.class);
+        query.setParameter("endereco", endereco);
+        return query.getResultList();
+    }
+// ...
 
 }

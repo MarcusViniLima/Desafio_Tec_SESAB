@@ -3,8 +3,6 @@ D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\models\Enu
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\PessoaController.java
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\PessoaFacade.java
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\exceptions\NonexistentEntityException.java
-D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\EnderecoJpaController.java
-D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\PessoaJpaController.java
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\JakartaRestConfiguration.java
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\AbstractFacade.java
 D:\programacao\PROJETOS\desafiotec\src\main\java\com\sesab\desafiotec\controllers\EnderecoController.java

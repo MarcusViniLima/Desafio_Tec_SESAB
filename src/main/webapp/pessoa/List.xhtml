@@ -31,7 +31,7 @@
                         <p:calendar id="dataFimFiltro" value="#{pessoaController.dataFimFiltro}" pattern="dd/MM/yyyy"/>
                         <h:outputText value=""/>
                     </p:panelGrid>
-                    
+
                     <p:dataTable id="datalist" value="#{pessoaController.items}" var="item"
                                  selectionMode="single" selection="#{pessoaController.selected}"
                                  paginator="true"
@@ -84,7 +84,7 @@
                                      actionListener="#{pessoaController.prepareCreate}" 
                                      oncomplete="PF('PessoaCreateDialog').show()"
                                      style="margin-right: 5px;"/>
-                    
+
                     <p:commandButton id="viewButton" icon="pi pi-eye" value="Visualizar" 
                                      disabled="#{empty pessoaController.selected}"
                                      oncomplete="PF('PessoaViewDialog').show()"
@@ -92,12 +92,14 @@
                                      style="margin-right: 5px;">
                         <f:setPropertyActionListener target="#{pessoaController.selected}" value="#{pessoaController.selected}" />
                     </p:commandButton>
-                    
-                    <p:commandButton id="editButton" icon="pi pi-pencil" value="#{bundle.Edit}" 
+
+                    <p:commandButton id="editButton" icon="pi pi-pencil" value="#{bundle.Edit}"
+                                     actionListener="#{pessoaController.prepareEdit}"
                                      disabled="#{empty pessoaController.selected}"
                                      oncomplete="PF('PessoaEditDialog').show()"
+                                     update=":PessoaEditForm:display"
                                      style="margin-right: 5px;"/>
-                    
+
                     <p:commandButton id="deleteButton" icon="pi pi-trash" value="#{bundle.Delete}" 
                                      actionListener="#{pessoaController.destroy}" 
                                      update="growl,datalist" 

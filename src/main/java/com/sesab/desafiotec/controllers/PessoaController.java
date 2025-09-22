@@ -275,7 +275,21 @@ public class PessoaController implements Serializable {
     }
 
     public void update() {
-        persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("PessoaUpdated"));
+        try {
+            if (selected != null && enderecosDaPessoa != null) {
+                selected.setEnderecos(new ArrayList<>(enderecosDaPessoa));
+            }
+
+            persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("PessoaUpdated"));
+
+            if (!JsfUtil.isValidationFailed()) {
+                JsfUtil.addSuccessMessage("Pessoa atualizada com sucesso!");
+                items = null;
+            }
+        } catch (Exception e) {
+            Logger.getLogger(PessoaController.class.getName()).log(Level.SEVERE, "Erro ao atualizar pessoa", e);
+            JsfUtil.addErrorMessage("Erro ao atualizar: " + e.getMessage());
+        }
     }
 
     public void destroy() {
@@ -300,6 +314,13 @@ public class PessoaController implements Serializable {
 
     public void prepareView(Pessoa pessoa) {
         this.selected = pessoa;
+        if (selected.getId() != null) {
+            Pessoa pessoaComEnderecos = getFacade().findWithEnderecos(selected.getId());
+            if (pessoaComEnderecos != null) {
+                this.enderecosDaPessoa = new ArrayList<>(pessoaComEnderecos.getEnderecos());
+                this.selected.setEnderecos(new ArrayList<>(enderecosDaPessoa));
+            }
+        }
         this.selectedWithEnderecos = null;
     }
 
@@ -347,8 +368,21 @@ public class PessoaController implements Serializable {
     }
 
     public void removerEndereco(Endereco endereco) {
-        getEnderecosDaPessoa().remove(endereco);
-        JsfUtil.addSuccessMessage("Endereço removido com sucesso!");
+        if (enderecosDaPessoa != null && selected != null) {
+            boolean removedFromList = enderecosDaPessoa.remove(endereco);
+
+            if (selected.getEnderecos() != null) {
+                boolean removedFromPessoa = selected.getEnderecos().remove(endereco);
+            }
+
+            if (removedFromList) {
+                JsfUtil.addSuccessMessage("Endereço retirado da lista!");
+            } else {
+                JsfUtil.addWarningMessage("Endereço não encontrado na lista.");
+            }
+        } else {
+            JsfUtil.addErrorMessage("Lista de endereços não disponível.");
+        }
     }
 
     protected void setEmbeddableKeys() {
@@ -449,4 +483,20 @@ public class PessoaController implements Serializable {
             }
         }
     }
+
+    public void prepareEdit() {
+        if (selected != null && selected.getId() != null) {
+            Pessoa pessoaComEnderecos = getFacade().findWithEnderecos(selected.getId());
+            if (pessoaComEnderecos != null) {
+                if (pessoaComEnderecos.getEnderecos() != null) {
+                    this.enderecosDaPessoa = new ArrayList<>(pessoaComEnderecos.getEnderecos());
+                    this.selected.setEnderecos(new ArrayList<>(enderecosDaPessoa));
+                } else {
+                    this.enderecosDaPessoa = new ArrayList<>();
+                    this.selected.setEnderecos(new ArrayList<>());
+                }
+            }
+        }
+    }
+
 }

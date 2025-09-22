@@ -11,20 +11,53 @@
         <p:dialog id="PessoaEditDlg" widgetVar="PessoaEditDialog" modal="true" resizable="false" appendTo="@(body)" header="#{bundle.EditPessoaTitle}">
             <h:form id="PessoaEditForm">
                 <h:panelGroup id="display">
-                    <p:panelGrid columns="2" rendered="#{pessoaController.selected != null}">
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_nome}" for="nome" />
-                        <p:inputText id="nome" value="#{pessoaController.selected.nome}" title="#{bundle.EditPessoaTitle_nome}" required="true" requiredMessage="#{bundle.EditPessoaRequiredMessage_nome}"/>
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_cpf}" for="cpf" />
-                        <p:inputText id="cpf" value="#{pessoaController.selected.cpf}" title="#{bundle.EditPessoaTitle_cpf}" />
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_email}" for="email" />
-                        <p:inputText id="email" value="#{pessoaController.selected.email}" title="#{bundle.EditPessoaTitle_email}" />
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_dataCriacao}" for="dataCriacao" />
-                        <p:inputText id="dataCriacao" value="#{pessoaController.selected.dataCriacao}" title="#{bundle.EditPessoaTitle_dataCriacao}" disabled="true"/>
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_perfil}" for="perfil" />
-                        <p:inputText id="perfil" value="#{pessoaController.selected.perfil}" title="#{bundle.EditPessoaTitle_perfil}" disabled="true"/>
-                        <p:outputLabel value="#{bundle.EditPessoaLabel_id}" for="id" />
-                        <p:inputText id="id" value="#{pessoaController.selected.id}" title="#{bundle.EditPessoaTitle_id}" disabled="true" />
-                    </p:panelGrid>
+
+                    <p:panel header="Dados Pessoais" style="margin-bottom: 20px;">
+                        <p:panelGrid columns="2" style="width: 100%">
+                            <p:outputLabel value="Nome:" for="nome" />
+                            <p:inputText id="nome" value="#{pessoaController.selected.nome}" title="Nome" required="true" requiredMessage="O nome é obrigatório." maxlength="100"/>
+
+                            <p:outputLabel value="CPF:" for="cpf" />
+                            <p:inputText id="cpf" value="#{pessoaController.selected.cpf}" title="CPF" maxlength="14"/>
+
+                            <p:outputLabel value="Email:" for="email" />
+                            <p:inputText id="email" value="#{pessoaController.selected.email}" title="Email" maxlength="50"/>
+
+                            <p:outputLabel value="Data de Criação:" for="dataCriacao" />
+                            <p:datePicker id="dataCriacao" value="#{pessoaController.selected.dataCriacao}" readonly="true" disabled="true" pattern="dd/MM/yyyy" title="Data de Criação" />
+
+                            <p:outputLabel value="Perfil:" for="perfil" />
+                            <p:selectOneMenu id="perfil" value="#{pessoaController.selected.perfil}" required="true" title="Perfil" disabled="true">
+                                <f:selectItem itemLabel="Selecione..." itemValue="" />
+                                <f:selectItem itemLabel="Administrador" itemValue="ADM" />
+                                <f:selectItem itemLabel="Usuário" itemValue="USER" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="ID:" for="id" />
+                            <p:inputText id="id" value="#{pessoaController.selected.id}" title="ID" disabled="true" />
+                        </p:panelGrid>
+                    </p:panel>
+
+                    <p:panel header="Endereços Cadastrados" style="margin-top: 20px;">
+                        <p:dataTable id="enderecosTable" var="endereco" value="#{pessoaController.enderecosDaPessoa}" rendered="#{not empty pessoaController.enderecosDaPessoa}">
+                            <p:column headerText="Logradouro">
+                                <h:outputText value="#{endereco.logradouro}"/>
+                            </p:column>
+                            <p:column headerText="CEP">
+                                <h:outputText value="#{endereco.cep}"/>
+                            </p:column>
+                            <p:column headerText="Ações">
+                                <p:commandButton icon="pi pi-times" value="Retirar" 
+                                                 actionListener="#{pessoaController.removerEndereco(endereco)}"
+                                                 update=":PessoaEditForm:enderecosTable, :PessoaEditForm:display, :growl" 
+                                                 title="Retirar Endereço" styleClass="ui-button-danger">
+                                    <p:confirm header="Confirmação" message="Tem certeza que deseja retirar este endereço?" icon="pi pi-exclamation-triangle" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                        <h:outputText value="Nenhum endereço cadastrado." rendered="#{empty pessoaController.enderecosDaPessoa}" />
+                    </p:panel>
+
                     <p:commandButton actionListener="#{pessoaController.update}" value="#{bundle.Save}" update="display,:PessoaListForm:datalist,:growl" oncomplete="handleSubmit(args, 'PessoaEditDialog');"/>
                     <p:commandButton value="#{bundle.Cancel}" onclick="PessoaEditDialog.hide()"/>
                 </h:panelGroup>

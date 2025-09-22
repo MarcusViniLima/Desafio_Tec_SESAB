@@ -1,7 +1,14 @@
+FROM maven:3.8.4-openjdk-11 AS build
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-# Click nbfs://nbhost/SystemFileSystem/Templates/Other/Dockerfile to edit this template
+FROM payara/server-full:5.2022.5-jdk11
 
-FROM alpine:latest
+# Copia o arquivo WAR
+COPY --from=build /app/target/desafiotec-1.0-SNAPSHOT.war /opt/payara/deployments/
 
-CMD ["/bin/sh"]
+EXPOSE 8080 4848
+
+CMD ["asadmin", "start-domain", "--verbose"]

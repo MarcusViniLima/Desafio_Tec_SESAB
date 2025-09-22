@@ -3,6 +3,7 @@ package com.sesab.desafiotec.controllers;
 import com.sesab.desafiotec.models.Endereco;
 import com.sesab.desafiotec.controllers.util.JsfUtil;
 import com.sesab.desafiotec.controllers.util.JsfUtil.PersistAction;
+import com.sesab.desafiotec.models.Pessoa;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +26,10 @@ public class EnderecoController implements Serializable {
 
     @EJB
     private com.sesab.desafiotec.controllers.EnderecoFacade ejbFacade;
+    
+    @EJB
+    private PessoaFacade ejbFacadePessoa;
+    
     private List<Endereco> items = null;
     private Endereco selected;
 
@@ -66,13 +71,31 @@ public class EnderecoController implements Serializable {
         persist(PersistAction.UPDATE, ResourceBundle.getBundle("/Bundle").getString("EnderecoUpdated"));
     }
 
+    // EnderecoController.java
+// ...
     public void destroy() {
+        // Adicionar esta verificação
+        if (selected != null && selected.getId() != null) {
+            // Encontrar todas as pessoas que têm este endereço
+            // e remover a associação em cada uma delas.
+            // **Este método (findByEndereco) não existe, você precisará criá-lo no PessoaFacade.**
+            List<Pessoa> pessoasComEndereco = ejbFacadePessoa.findByEndereco(selected);
+
+            for (Pessoa pessoa : pessoasComEndereco) {
+                pessoa.getEnderecos().remove(selected);
+                ejbFacadePessoa.edit(pessoa);
+            }
+        }
+
+        // Agora que o endereço não está mais associado a nenhuma pessoa, você pode excluí-lo.
         persist(PersistAction.DELETE, ResourceBundle.getBundle("/Bundle").getString("EnderecoDeleted"));
+
         if (!JsfUtil.isValidationFailed()) {
-            selected = null; // Remove selection
-            items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
+            items = null;
         }
     }
+// ...
 
     public List<Endereco> getItems() {
         if (items == null) {
