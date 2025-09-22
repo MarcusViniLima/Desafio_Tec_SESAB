@@ -64,6 +64,25 @@ desafiotec/
 └── pom.xml                           # Dependências Maven
 </pre>
 
+<h2>🚧 Principais Desafios Enfrentados</h2>
+
+<ol>
+  <li>
+    <strong>Configuração do servidor TomEE:</strong>  
+    O problema do <code>JACC</code> ocorre porque o TomEE tenta iniciar um sistema de segurança 
+    que não possui a biblioteca de implementação necessária, causando falha na implantação da aplicação.  
+    <br>👉 <em>Solução:</em> Desativar explicitamente o JACC nas configurações do servidor.
+  </li>
+  <br>
+  <li>
+    <strong>Configuração do servidor GlassFish:</strong>  
+    O <code>Hibernate</code> tenta se conectar automaticamente ao banco <code>Derby</code> (padrão do GlassFish) 
+    em vez do banco configurado na aplicação.  
+    <br>👉 <em>Solução:</em> Alterar manualmente o banco de dados nas configurações do servidor para garantir a conexão correta.
+  </li>
+</ol>
+
+
 <h2>🐳 Execução com Docker</h2>
 
 <h3>Pré-requisitos</h3>
