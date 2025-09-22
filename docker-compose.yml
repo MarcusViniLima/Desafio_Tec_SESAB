@@ -1,14 +1,13 @@
-version: '3.8'
-
 services:
   desafiotec-app:
     build: .
     ports:
       - "8080:8080"
+      - "4848:4848"  # Admin console
     volumes:
-      - app_data:/opt/payara/derby_data
+      - app_data:/glassfish4/derby_data
     environment:
-      - JAVA_OPTS=-Dderby.system.home=/opt/payara/derby_data
+      - JAVA_OPTS=-Dderby.system.home=/glassfish4/derby_data
 
 volumes:
   app_data:
